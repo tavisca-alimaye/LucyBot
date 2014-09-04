@@ -10,7 +10,7 @@ namespace MyXmppClient
     {
             static void Main(string[] args)
             {
-                MainWindow mainWindow = new MainWindow();
+                ChatBot mainWindow = new ChatBot();
                 mainWindow.Start();
             }
         

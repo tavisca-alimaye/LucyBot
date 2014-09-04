@@ -7,16 +7,17 @@ using Matrix;
 using System.Diagnostics;
 using Matrix.Xmpp.Client;
 using Matrix.Xmpp;
+using System.Threading;
 
 namespace MyXmppClient
 {
-    public class MainWindow
+    public class ChatBot
     {
         private Matrix.Xmpp.Client.XmppClient _xmppClient;
         private Matrix.Xmpp.Client.PresenceManager _presenceManager;
         private bool _loggedIn;
 
-        public MainWindow()
+        public ChatBot()
         {
             _xmppClient = new Matrix.Xmpp.Client.XmppClient();
             _loggedIn = false;
@@ -30,24 +31,43 @@ namespace MyXmppClient
             _xmppClient.SetUsername(botUserName);
             _xmppClient.SetXmppDomain(domain);
             _xmppClient.Password = "bottheeva";
+            _xmppClient.Show = Matrix.Xmpp.Show.chat;
 
-            _xmppClient.Open();
-            _xmppClient.OnLogin += new EventHandler<Matrix.EventArgs>(_xmppClient_OnLogin);
+            try
+            {
+                _xmppClient.OnLogin += new EventHandler<Matrix.EventArgs>(_xmppClient_OnLogin);
+                _xmppClient.Open();
+                
+                Thread.Sleep(10000);
+            }
+            catch
+            {
+                Console.WriteLine("Login Failed");
+            }
+            
 
             if (_loggedIn)
             {
                 _xmppClient.AutoRoster = true;
                 _xmppClient.OnPresence += new EventHandler<Matrix.Xmpp.Client.PresenceEventArgs>(_xmppClient_OnPresence);
-                /*_presenceManager = new PresenceManager(_xmppClient);
+                _xmppClient.OnMessage += new EventHandler<Matrix.Xmpp.Client.MessageEventArgs>(_xmppClient_OnMessage);
+                _presenceManager = new PresenceManager(_xmppClient);
                 Jid sub_jid = "114716_1163344@chat.hipchat.com";
                 _presenceManager.Subscribe(sub_jid, "I want to subscribe you", sub_jid.User);
-                _presenceManager.OnSubscribe += _presenceManager_OnSubscribe;*/
-                do
-                {
-                    _xmppClient.OnMessage += new EventHandler<Matrix.Xmpp.Client.MessageEventArgs>(_xmppClient_OnMessage); 
-                } while (true);
-            } 
+                _presenceManager.OnSubscribe += _presenceManager_OnSubscribe;
+                
+            }
+            _xmppClient.Close();
+        }
 
+        private void _xmppClient_OnError(object sender, ExceptionEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        void _xmppClient_OnClose(object sender, Matrix.EventArgs e)
+        {
+            _xmppClient.Dispose();
         }
 
         void _presenceManager_OnSubscribe(object sender, PresenceEventArgs e)
@@ -89,6 +109,13 @@ namespace MyXmppClient
 
         void _xmppClient_OnLogin(object sender, Matrix.EventArgs e)
         {
+            int i = 0;
+            while (i < 10)
+            {
+                Console.Write(".");
+                i++;
+                Thread.Sleep(500);
+            }
             _loggedIn = true;
             Console.WriteLine("Successfully logged in!!");
         }
