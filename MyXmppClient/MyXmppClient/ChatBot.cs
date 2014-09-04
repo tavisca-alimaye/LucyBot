@@ -36,7 +36,7 @@ namespace MyXmppClient
             _xmppClient.OnLogin += new EventHandler<Matrix.EventArgs>(_xmppClient_OnLogin);
             _xmppClient.OnMessage += new EventHandler<Matrix.Xmpp.Client.MessageEventArgs>(_xmppClient_OnMessage);
             _xmppClient.OnPresence += new EventHandler<Matrix.Xmpp.Client.PresenceEventArgs>(_xmppClient_OnPresence);
-            _xmppClient.AutoRoster = true;
+            _xmppClient.AutoRoster = false;
 
             try
             {
@@ -53,7 +53,7 @@ namespace MyXmppClient
             if (_loggedIn)
             {
                 MucManager manager = new MucManager(_xmppClient);
-                Jid roomJid = new Jid("Tavisca@conference.hipchat.com");
+                Jid roomJid = new Jid("114716_tavisca@conf.hipchat.com");
                 manager.EnterRoom(roomJid, "lucy");
                 _xmppClient.Send(new Message(roomJid,"This is test"));
                  _presenceManager = new PresenceManager(_xmppClient);
@@ -61,7 +61,7 @@ namespace MyXmppClient
                 _presenceManager.Subscribe(sub_jid);
                 do
                 {
-                    
+                    Thread.Sleep(100);
                 } while (true);
             }
             _xmppClient.Close();
@@ -76,7 +76,7 @@ namespace MyXmppClient
                 {
                     message = message.Replace("@lucy","");
                     message = message.TrimStart().TrimEnd();
-                    _xmppClient.Send(new Message(user+"@chat.hipchat.com", MessageType.chat, message));
+                    _xmppClient.Send(new Message(user + e.Message.From.Server, MessageType.chat, message));
                     Console.WriteLine(message);
                 }
         }
