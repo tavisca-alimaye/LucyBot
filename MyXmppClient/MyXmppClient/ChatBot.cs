@@ -14,7 +14,7 @@ namespace MyXmppClient
     public class ChatBot
     {
         private Matrix.Xmpp.Client.XmppClient _xmppClient;
-        private Matrix.Xmpp.Client.PresenceManager _presenceManager;
+        private Matrix.Xmpp.Client.PresenceManager _presenceManager; 
         private bool _loggedIn;
 
         public ChatBot()
@@ -26,12 +26,12 @@ namespace MyXmppClient
         public void Start()
         {
             string botUserName = "114716_1167039";
-            string domain = "chat.hipchat.com";
+            string domain = "conf.hipchat.com";
 
             _xmppClient.SetUsername(botUserName);
             _xmppClient.SetXmppDomain(domain);
             _xmppClient.Password = "bottheeva";
-            _xmppClient.Show = Matrix.Xmpp.Show.chat;
+            //_xmppClient.Show = Matrix.Xmpp.Show.chat;
 
             _xmppClient.OnLogin += new EventHandler<Matrix.EventArgs>(_xmppClient_OnLogin);
             _xmppClient.OnMessage += new EventHandler<Matrix.Xmpp.Client.MessageEventArgs>(_xmppClient_OnMessage);
@@ -52,7 +52,11 @@ namespace MyXmppClient
 
             if (_loggedIn)
             {
-                _presenceManager = new PresenceManager(_xmppClient);
+                MucManager manager = new MucManager(_xmppClient);
+                Jid roomJid = new Jid("Tavisca@conference.hipchat.com");
+                manager.EnterRoom(roomJid, "lucy");
+                _xmppClient.Send(new Message(roomJid,"This is test"));
+                 _presenceManager = new PresenceManager(_xmppClient);
                 Jid sub_jid = new Jid("114716_1163344@chat.hipchat.com");
                 _presenceManager.Subscribe(sub_jid);
                 do
@@ -100,13 +104,13 @@ namespace MyXmppClient
 
         void _xmppClient_OnLogin(object sender, Matrix.EventArgs e)
         {
-            int i = 0;
+            /*int i = 0;
             while (i < 10)
             {
                 Console.Write(".");
                 i++;
                 Thread.Sleep(500);
-            }
+            }*/
             _loggedIn = true;
             Console.WriteLine("Successfully logged in!!");
         }
