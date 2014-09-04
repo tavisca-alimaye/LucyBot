@@ -54,7 +54,7 @@ namespace MyXmppClient
             {
                 MucManager manager = new MucManager(_xmppClient);
                 Jid roomJid = new Jid("114716_tavisca@conf.hipchat.com");
-                manager.EnterRoom(roomJid, "lucy");
+                manager.EnterRoom(roomJid, "Lucy Bot");
                 _xmppClient.Send(new Message(roomJid,"This is test"));
                  _presenceManager = new PresenceManager(_xmppClient);
                 Jid sub_jid = new Jid("114716_1163344@chat.hipchat.com");
