@@ -33,9 +33,13 @@ namespace MyXmppClient
             _xmppClient.Password = "bottheeva";
             _xmppClient.Show = Matrix.Xmpp.Show.chat;
 
+            _xmppClient.OnLogin += new EventHandler<Matrix.EventArgs>(_xmppClient_OnLogin);
+            _xmppClient.OnMessage += new EventHandler<Matrix.Xmpp.Client.MessageEventArgs>(_xmppClient_OnMessage);
+            _xmppClient.OnPresence += new EventHandler<Matrix.Xmpp.Client.PresenceEventArgs>(_xmppClient_OnPresence);
+            _xmppClient.AutoRoster = true;
+
             try
             {
-                _xmppClient.OnLogin += new EventHandler<Matrix.EventArgs>(_xmppClient_OnLogin);
                 _xmppClient.Open();
                 
                 Thread.Sleep(10000);
@@ -48,49 +52,36 @@ namespace MyXmppClient
 
             if (_loggedIn)
             {
-                _xmppClient.AutoRoster = true;
-                _xmppClient.OnPresence += new EventHandler<Matrix.Xmpp.Client.PresenceEventArgs>(_xmppClient_OnPresence);
-                _xmppClient.OnMessage += new EventHandler<Matrix.Xmpp.Client.MessageEventArgs>(_xmppClient_OnMessage);
                 _presenceManager = new PresenceManager(_xmppClient);
-                Jid sub_jid = "114716_1163344@chat.hipchat.com";
-                _presenceManager.Subscribe(sub_jid, "I want to subscribe you", sub_jid.User);
-                _presenceManager.OnSubscribe += _presenceManager_OnSubscribe;
-                
+                Jid sub_jid = new Jid("114716_1163344@chat.hipchat.com");
+                _presenceManager.Subscribe(sub_jid);
+                do
+                {
+                    
+                } while (true);
             }
             _xmppClient.Close();
-        }
-
-        private void _xmppClient_OnError(object sender, ExceptionEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        void _xmppClient_OnClose(object sender, Matrix.EventArgs e)
-        {
-            _xmppClient.Dispose();
-        }
-
-        void _presenceManager_OnSubscribe(object sender, PresenceEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         void _xmppClient_OnMessage(object sender, Matrix.Xmpp.Client.MessageEventArgs e)
         {
             string user = e.Message.From.User;
             string message = e.Message.Body;
-            if (IsAddressedToBot(message))
-            {
-                string remainingMessage = ParseMessage(message);
-                _xmppClient.Send(new Message("114716_1167039@chat.hipchat.com", MessageType.chat, remainingMessage));
-                Console.WriteLine(remainingMessage);
-            }
+            if(message!=null)
+                if (IsAddressedToBot(message))
+                {
+                    message = message.Replace("@lucy","");
+                    message = message.TrimStart().TrimEnd();
+                    _xmppClient.Send(new Message(user+"@chat.hipchat.com", MessageType.chat, message));
+                    Console.WriteLine(message);
+                }
         }
 
         private string ParseMessage(string message)
         {
             var tempMessage = message.Replace("@lucy", " ");
             tempMessage = message.TrimStart().TrimEnd();
+            Console.WriteLine(tempMessage);
             return tempMessage;
         }
 
